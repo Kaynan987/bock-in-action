@@ -1,0 +1,166 @@
+/* ฅ•ω•ฅ */
+body.light-mode {
+  /* Estilos para o modo claro */
+  background-color: #ffffff;
+  color: #333333;
+}
+
+body.dark-mode {
+  /* Estilos para o modo escuro */
+  background-color: #ffffff;
+  color: #333333;
+}
+.darkBottom{
+border-radius: 1em;
+width:6em;
+height:3em;
+
+}
+
+
+
+
+
+.S {
+  position: absolute;
+  bottom: 2em;
+  left: 9em;
+  border-radius: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilo Global */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Estilos do Cabeçalho */
+header {
+  background-color: #333;
+  padding: 10px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  padding: 10px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Estilos do Hero */
+.hero {
+  background-image: url('hero-background.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-content {
+  text-align: center;
+  color: #fff;
+}
+
+.hero h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.btn-primary,
+.btn-secondary {
+  display: inline-block;
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  border-radius: 10px;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  background-color: #555;
+  border-radius: 10px;
+}
+
+/* Estilos dos Livros em Destaque */
+.featured-books {
+  padding: 40px 0;
+  text-align: center;
+}
+
+.featured-books h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.book-list {
+  display: flex;
+  justify-content: space-between;
+  border-radius: 50px;
+}
+
+.book-card {
+  width: 30%;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 50px;
+}
+
+.book-card img {
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  border-radius: 50px;
+}
+
+.book-card h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  border-radius: 50px;
+}
+
+.book-card p {
+  font-size: 16px;
+  margin-bottom: 10px;
+  border-radius: 50px;
+}
+
+/* Estilos do Rodapé */
+footer {
+  background-color: #333;
+  padding: 20px;
+  color: #fff;
+  text-align: center;
+}
