@@ -136,7 +136,7 @@ function isLoggedIn() {
                     echo '<p>Categoria: <span class="category">' . $row['categoria'] . '</span></p>';
                     echo '<p>Idade de Leitura: ' . $row['Idadeleitura'] . '</p>';
                     echo '<p>' . $row['sinopse'] . '</p>';
-                    echo '<a href="infolivros.php?id=' . $row['id'] . '" class="details-button">Detalhes</a>';
+                    echo '<a href="emprestimo.php?id=' . $row['id'] . '" class="details-button">Detalhes</a>';
                     echo '</div>';
                     echo '</div>';
                 }

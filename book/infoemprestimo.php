@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<?php
+session_start();
+
+// Verifica se o usuário está logado
+function isLoggedIn() {
+    return isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
+}
+?>
 <html>
 <head>
     <title>Lista de Empréstimos</title>
@@ -72,165 +80,187 @@
         border: none;
         cursor: pointer;
     }
+    .logo img {
+      width: 70px;
+    }
+
+    .logo {
+      margin-inline: 40px;
+    }
+    .hotbartext1 {
+      font-family: "Helvetica", sans-serif;
+      font-weight: bold;
+      color: #FFFFFF;
+      height: min-content;
+    }
+    header {
+      background-color: #161616;
+      display: flex;
+      padding: 10px;
+      padding-inline: 20px;
+      position: sticky;
+      width: 100%;
+      gap: 10px;
+      top: 0;
+    }
+ header {
+      /* Estilos do cabeçalho no modo claro */
+      background-color: #1D1D1D;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      align-content: center;
+    }
 </style>
-</center>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="dashboard.css">
-  </head>
-  <body>
-  <nav>
-      <ul class="navbar">
-        <li><a href="cadastrarlivros.php">Adicionar Livros</a></li>
-        <li><a href="dashboard.php">Voltar</a></li>
-      </ul>
-    </nav>
+    <header style="z-index: 40;">
+<a href="index.php" class="logo">
+  <img src="https://media.discordapp.net/attachments/1110882147201454142/1141344175133036594/logogk.png"></a>
+<div class="cab">
+<a href="index.php" class="hotbartext1">inicio</a>  
+<a href="dashboard.php" class="hotbartext1">VOLTA</a>
+<?php
+      if (isset($_SESSION['email'])) {
+    // Usuário está conectado, exibir o status
+        echo '<li><a class="hotbartext1" href="logout.php">Sair</a><p class="user-status">Conectado como: ' . $_SESSION['email'] . '</p></li>';
+      } else {
+        // Usuário não está conectado, exibir mensagem alternativa
+        echo '<li><a href="login.php" class="hotbartext1">entrar</a><p class="user-status">Você não está em nenhuma conta</p></li>';
+        }?>
+</header>
+</head>
 <body>
-<center>  
-    
+
 <h1>Lista de Empréstimos</h1>
 
-    
 <form method="GET" action="" class="search-form">
-            <input type="text" name="nome" placeholder="pesquisar o nome do aluno" id="nome" class="search-input">
-            <input type="text" name="livro" placeholder="pesquisar o nome do livro" id="livro" class="search-input">
-            <center>
-                <input type="submit" value="Pesquisar" class="search-button">
-            </center>
-        </form>
+    <input type="text" name="nome" placeholder="pesquisar o nome do aluno" id="nome" class="search-input">
+    <input type="text" name="livro" placeholder="pesquisar o nome do livro" id="livro" class="search-input">
+    <center>
+        <input type="submit" value="Pesquisar" class="search-button">
+</form>
+
 <?php
-        // Configurações de conexão com o banco de dados (substitua as informações com as suas)
-        $servername = "localhost";
-        $username = "root";
-        $password = "root";
-        $dbname = "locacao";
+// Configurações de conexão com o banco de dados (substitua as informações com as suas)
+$servername = "localhost";
+$username = "root";
+$password = "root";
+$dbname = "locacao";
 
-        // Número de resultados por página
-        $resultados_por_pagina = 10;
+// Número de resultados por página
+$resultados_por_pagina = 10;
 
-        // Página atual (por padrão, será a primeira página)
-        $pagina = 1;
+// Página atual (por padrão, será a primeira página)
+$pagina = 1;
 
-        if (isset($_GET['pagina'])) {
-            $pagina = $_GET['pagina'];
+if (isset($_GET['pagina'])) {
+    $pagina = $_GET['pagina'];
+}
+
+// Conectando ao banco de dados
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Erro na conexão com o banco de dados: " . $conn->connect_error);
+}
+
+// Consulta SQL para buscar empréstimos com o nome do livro (inclui paginação)
+$sql = "SELECT emprestimo.id, emprestimo.nome, emprestimo.email, acervo.nome AS nome_acervo, emprestimo.data_emprestimo 
+    FROM emprestimo 
+    INNER JOIN livros.acervo ON emprestimo.livro_id = acervo.id 
+    WHERE 1"; // 1 é usado como um valor verdadeiro
+
+// Verifica se há parâmetros de pesquisa e adiciona à consulta SQL
+if (isset($_GET['nome']) && !empty($_GET['nome'])) {
+    $nome = $_GET['nome'];
+    $sql .= " AND emprestimo.nome LIKE '%$nome%'";
+}
+
+if (isset($_GET['livro']) && !empty($_GET['livro'])) {
+    $livro = $_GET['livro'];
+    $sql .= " AND acervo.nome LIKE '%$livro%'";
+}
+
+$sql .= " LIMIT " . (($pagina - 1) * $resultados_por_pagina) . ", " . $resultados_por_pagina;
+
+$result = $conn->query($sql);
+
+if ($result) {
+    if ($result->num_rows > 0) {
+        echo "<table>";
+        echo "<tr><th>ID</th><th>Nome</th><th>Email</th><th>Livro</th><th>Data de Empréstimo</th><th>Ação</th></tr>";
+
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td style='color: white;'>" . $row["id"] . "</td>";
+            echo "<td style='color: white;'>" . $row["nome"] . "</td>";
+            echo "<td style='color: white;'>" . $row["email"] . "</td>";
+            echo "<td style='color: white;'>" . $row["nome_acervo"] . "</td>";
+            echo "<td style='color: white;'>" . $row["data_emprestimo"] . "</td>";
+            echo "<td>";
+            echo "<form method='POST'>";
+            echo "<input type='hidden' name='action' value='delete'>";
+            echo "<input type='hidden' name='id' value='" . $row["id"] . "'>";
+            echo "<button class='apagar-btn' type='submit'>Apagar</button>";
+            echo "</form>";
+            echo "</td>";
+            echo "</tr>";
         }
 
-        // Conectando ao banco de dados
-        $conn = new mysqli($servername, $username, $password, $dbname);
+        echo "</table>";
 
-        if ($conn->connect_error) {
-            die("Erro na conexão com o banco de dados: " . $conn->connect_error);
-        }
-
-        // Consulta SQL para buscar empréstimos com o nome do livro (inclui paginação)
-        $sql = "SELECT emprestimo.id, emprestimo.nome, emprestimo.email, acervo.nome AS nome_acervo, emprestimo.data_emprestimo 
-            FROM emprestimo 
-            INNER JOIN livros.acervo ON emprestimo.livro_id = acervo.id 
-            WHERE 1"; // 1 é usado como um valor verdadeiro
-
-        // Verifica se há parâmetros de pesquisa e adiciona à consulta SQL
-        if (isset($_GET['nome']) && !empty($_GET['nome'])) {
-            $nome = $_GET['nome'];
-            $sql .= " AND emprestimo.nome LIKE '%$nome%'";
-        }
-
-        if (isset($_GET['livro']) && !empty($_GET['livro'])) {
-            $livro = $_GET['livro'];
-            $sql .= " AND acervo.nome LIKE '%$livro%'";
-        }
-
-        $sql .= " LIMIT " . (($pagina - 1) * $resultados_por_pagina) . ", " . $resultados_por_pagina;
-
+        // Cálculo da quantidade total de páginas
+        $sql = "SELECT COUNT(*) AS total FROM emprestimo";
         $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $total_resultados = $row['total'];
+        $total_paginas = ceil($total_resultados / $resultados_por_pagina);
 
-        if ($result) {
-            if ($result->num_rows > 0) {
-                echo "<table>";
-                echo "<tr><th>ID</th><th>Nome</th><th>Email</th><th>Livro</th><th>Data de Empréstimo</th><th>Ação</th></tr>";
-
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td style='color: white;'>" . $row["id"] . "</td>";
-                    echo "<td style='color: white;'>" . $row["nome"] . "</td>";
-                    echo "<td style='color: white;'>" . $row["email"] . "</td>";
-                    echo "<td style='color: white;'>" . $row["nome_acervo"] . "</td>";
-                    echo "<td style='color: white;'>" . $row["data_emprestimo"] . "</td>";
-                    echo "<td><button class='apagar-btn' data-id='" . $row["id"] . "'>Apagar</button></td>";
-                    echo "</tr>";
-                }
-
-                echo "</table>";
-
-                // Cálculo da quantidade total de páginas
-                $sql = "SELECT COUNT(*) AS total FROM emprestimo";
-                $result = $conn->query($sql);
-                $row = $result->fetch_assoc();
-                $total_resultados = $row['total'];
-                $total_paginas = ceil($total_resultados / $resultados_por_pagina);
-
-                // Exibindo links para navegação entre páginas
-                echo "<div class='paginacao'>";
-                for ($pagina = 1; $pagina <= $total_paginas; $pagina++) {
-                    echo "<a href='?pagina=" . $pagina . "'>" . $pagina . "</a> ";
-                }
-                echo "</div>";
-            } else {
-                echo "Nenhum empréstimo encontrado.";
-            }
-        } else {
-            echo "Erro na consulta: " . $conn->error;
+        // Exibindo links para navegação entre páginas
+        echo "<div class='paginacao'>";
+        for ($pagina = 1; $pagina <= $total_paginas; $pagina++) {
+            echo "<a href='?pagina=" . $pagina . "'>" . $pagina . "</a> ";
         }
-
-        $conn->close();
-        ?>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const buttons = document.querySelectorAll(".apagar-btn");
-
-        buttons.forEach(function (button) {
-            button.addEventListener("click", function () {
-                const emprestimoId = this.getAttribute("data-id");
-                const currentButton = this; // Armazena a referência do botão atual
-
-                // Aqui você faz a solicitação AJAX para excluir o empréstimo
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "excluir_emprestimo.php", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            // Remova a linha da tabela usando a referência armazenada
-                            currentButton.closest('tr').remove();
-
-                            // Aqui você faz a solicitação AJAX para aumentar o estoque do livro
-                            const xhrEstoque = new XMLHttpRequest();
-                        xhrEstoque.open("POST", "aumentar_estoque.php", true);
-                        xhrEstoque.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                        xhrEstoque.onreadystatechange = function () {
-                            if (xhrEstoque.readyState === 4 && xhrEstoque.status === 200) {
-                                const responseEstoque = JSON.parse(xhrEstoque.responseText);
-                                if (responseEstoque.success) {
-                                    // Atualização do estoque bem-sucedida
-                                } else {
-                                    alert('Erro ao aumentar o estoque do livro.');
-                                }
-                            }
-                        };
-                        xhrEstoque.send("emprestimoId=" + emprestimoId); // Alteração aqui
-                            xhrEstoque.send("emprestimoId=" + emprestimoId); // Alteração aqui
-                        } 
-                    }
-                };
-                xhr.send("id=" + emprestimoId);
-            });
-        });
-    });
-</script>
+        echo "</div>";
+    } else {
+        echo "Nenhum empréstimo encontrado.";
+    }
+} else {
+    echo "Erro na consulta: " . $conn->error;
+}
 
 
+function getLivroIdFromEmprestimoId($conn, $emprestimoId) {
 
+    $sql = "SELECT livro_id FROM emprestimo WHERE id = $emprestimoId";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['livro_id'];
+    } else {
+        return null;
+    }
+}
+
+// Manipulador de formulário
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if ($_POST['action'] === 'delete') {
+        $emprestimoId = $_POST['id'];
+
+        // Excluir o empréstimo
+        $sqlDelete = "DELETE FROM emprestimo WHERE id = $emprestimoId";
+        if ($conn->query($sqlDelete) === TRUE) {
+            // Atualizar o estoque (adicionar 1)
+            $livroId = getLivroIdFromEmprestimoId($conn, $emprestimoId);
+
+      
+        }
+    }
+}
+?>
 </body>
-
 </html>
+

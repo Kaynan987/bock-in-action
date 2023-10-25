@@ -157,16 +157,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-
+    <center>
         <div class="teste">
         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) : ?>
-        <h1>Dashboard</h1>
-        <p>Bem-vindo à página de dashboard, <?php echo $_SESSION['email']; ?>!</p>
+        <p>Bem-vindo a nosso site, <?php echo $_SESSION['email']; ?>!</p>
         <div class="botom">
-        <a href="?logout=true">SAIR</a>
-        <a href="index.php">VOLTAR</a>
+        <a href="index.php">INICIO</a>
+        <?php
+        if (isset($_SESSION['email']) && $_SESSION['email'] == 'root@root.com') {
+            echo '<a href="dashboard.php" class="botom">ADMIN</a>';
+        }
+        ?> 
+            <a href="?logout=true">SAIR</a>
+            
         </div>
-       
+    </center>
         <?php else : ?>
             <center><h1><p class="texto">LOGIN</p></h1></center>
             

@@ -140,28 +140,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         align-items: center;
         background-color: #1a1a1a;
       }
-    .search-container {
+    
+      .search-container {
         margin-top: 20px;
         text-align: center;
+        position: relative;
+        bottom: 2em;      
       }
-
+      .btn-search {
+       background-color: transparent;
+      color: white;
+      font-weight: bolder;
+      text-decoration: none;
+      border: solid white 1px;
+      border-radius: 250px;
+      padding: 5px;
+      text-align: center;
+      width: 250px;
+      
+      }
       #livroSearch {
         padding: 8px;
         border: 1px solid #ccc;
         border-radius: 4px;
         margin-right: 5px;
       }
-
-      .btn-search {
-        padding: 8px 12px;
-        background-color: #1a1a1a;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-
-    
       .caixa{
          margin: 5px 0;
          text-align: center;
@@ -195,9 +198,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
   
   header {
-    background-color: #1a1a1a; /* Roxo forte */
-    padding: 15px;
-  }
+      background-color: #161616;
+      display: flex;
+      padding: 10px;
+      padding-inline: 20px;
+      position: sticky;
+      width: 100%;
+      gap: 10px;
+      top: 0;
+    }
+    header {
+      /* Estilos do cabeçalho no modo claro */
+      background-color: #1D1D1D;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      align-content: center;
+    }
   
   h1 {
     font-size: 24px;
@@ -249,7 +266,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     font-weight: bold;
   }
   
-  .btn-incrementar,
   .btn-decrementar {
     background-color: #1a1a1a; /* Roxo forte */
     color: #ffffff; /* Branco */
@@ -264,8 +280,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   .btn-decrementar:hover {
     background-color: #1a1a1a; /* Roxo mais claro */
   }
-  
-      
+  .livro-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr ; /* Dois livros por linha */
+        gap: -10em; /* Espaçamento entre os livros */
+    
+      }
+    
+    .livro-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .imagem {
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      border-radius: 20px;
+      background-image: linear-gradient(to bottom, purple, blue);
+      width: 200px;
+      height: 300px;
+      border-radius: 20px;
+    }
+    .nometext{
+  color:#FFFFFF;
+    }
+    .logo img {
+      width: 70px;
+    }
+
+    .logo {
+      margin-inline: 40px;
+    }
+    .hotbartext1 {
+      font-family: "Helvetica", sans-serif;
+      font-weight: bold;
+      color: #FFFFFF;
+      height: min-content;
+    }
+
   </style>
   <head>
     <meta charset="UTF-8">
@@ -274,42 +327,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="dashboard.css">
   </head>
   <body>
-    <header>
-      <h1>Dashboard</h1>
-    </header>
+  
+  <header style="z-index: 40;">
 
-    <nav>
-      <ul class="navbar">
-      <li><a href="index.php">Voltar</a></li>  
-      <li><a href="cadastrarlivros.php">cadastrar Livros</a></li>
-        <li><a href="infoemprestimo.php">informação de emprestimo</a></li>
-        <li><a href="cadastrarclub.php">cadastrar club</a></li>
+    <a href="index.php" class="logo">
+      <img src="https://media.discordapp.net/attachments/1110882147201454142/1141344175133036594/logogk.png"></a>
+    <div class="cab">
+      <a href="index.php" class="hotbartext1">Voltar</a>
+      <a href="cadastrarlivros.php" class="hotbartext1">cadastrar Livros</a>
+      <a href="cadastrarclub.php"class="hotbartext1">cadastrar club</a>
+      <a href="infoemprestimo.php" class="hotbartext1">informação de emprestimo</a>
+           
+      <?php
+      if (isset($_SESSION['email'])) {
+    // Usuário está conectado, exibir o status
+        echo '<li><a class="hotbartext1" href="logout.php">Sair</a><p class="user-status">Conectado como: ' . $_SESSION['email'] . '</p></li>';
+      } else {
+        // Usuário não está conectado, exibir mensagem alternativa
+        echo '<li><a href="login.php" class="hotbartext1">entrar</a><p class="user-status">Você não está em nenhuma conta</p></li>';
+        }?>
+        ,
 
-      </ul>
-    </nav>
-
+  
+</header>
     <main>
-      <section id="livros">
-        <h2>Livros Disponíveis</h2>
-        
-      
+      <section id="livros">    
   </ul>
         <!-- Search Bar -->
         <div class="search-container">
     <input type="text" id="livroSearch" placeholder="Pesquisar por Nome do Livro...">
+    <br>
+    <br>
     <button class="btn-search">Pesquisar</button>
 </div>
-        <ul id="livrosDisponiveisList">        
-  <center>  
           
-  <ul id="livrosDisponiveisList">
+  <ul id="livrosDisponiveisList"class="livro-grid">
     <?php foreach ($livros as $livro): ?>
         <li class="livro-item">
             <form action="" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="livro_id" value="<?php echo $livro['id']; ?>">
-                <img src="data:image/jpeg;base64,<?php echo base64_encode($livro['imagem']); ?>" alt="<?php echo $livro['nome']; ?>" width="200">
-                <br>
-                <label for="nome" style='color: white;'>Nome:</label>
+                <img class="imagem" src="data:image/jpeg;base64,<?php echo base64_encode($livro['imagem']); ?>" alt="<?php echo $livro['nome']; ?>"width="200">
+                <br>                
+                <center>
+                <div style="width: 10em;">
+                <?php 
+                echo '<h3 class="nometext" >' . $livro['nome'] . '</h3>';
+                ?>
+                </center>  
+                </div>
                 <br>
                 <input class="caixa" type="text" name="nome" value="<?php echo $livro['nome']; ?>"><br>
 
@@ -350,14 +415,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input class="caixa" type="text" name="localizacao" value="<?php echo $livro['localizacao']; ?>"><br>
 
                 <!-- Adicione outros campos aqui conforme necessário -->
-
+              <center>
                 <button class="salva" type="submit">Salvar</button>
-            </form>
+              </center>            
+              </form>
         </li>
     <?php endforeach; ?>
 </ul>
 
-</center>
 <?php
 
 // Conexão com o banco de dados

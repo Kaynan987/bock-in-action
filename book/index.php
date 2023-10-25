@@ -48,7 +48,14 @@ function isLoggedIn() {
       gap: 10px;
       top: 0;
     }
-
+ header {
+      /* Estilos do cabeçalho no modo claro */
+      background-color: #1D1D1D;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      align-content: center;
+    }
     .logo img {
       width: 70px;
     }
@@ -118,16 +125,8 @@ function isLoggedIn() {
     }
 
 
-    /* Estilo do botão de alternar modo */
 
-    header {
-      /* Estilos do cabeçalho no modo claro */
-      background-color: #1D1D1D;
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      align-content: center;
-    }
+   
 
     .hotbartext1 {
       font-family: "Helvetica", sans-serif;
@@ -368,8 +367,6 @@ function isLoggedIn() {
         // Usuário não está conectado, exibir mensagem alternativa
         echo '<li><a href="login.php" class="hotbartext1">entrar</a><p class="user-status">Você não está em nenhuma conta</p></li>';
         }?>
-
-  
 </header>
 
     </div>
